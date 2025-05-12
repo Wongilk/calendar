@@ -1,8 +1,10 @@
-// src/app/store.ts
 import { configureStore } from "@reduxjs/toolkit";
+import calendarReducer from "../features/calendar/calendarSlice";
 
 export const store = configureStore({
-  reducer: {},
+  reducer: {
+    calendar: calendarReducer,
+  },
 });
 
 export type RootState = ReturnType<typeof store.getState>;
