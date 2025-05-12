@@ -7,17 +7,34 @@ import { getYearMonth } from "../../utils/date";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
 import { setSelectedDate } from "../../features/calendar/calendarSlice";
 import { useAppSelector } from "../../hooks/useAppSelector";
+import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
 
-interface DatePickerProps {
-  className?: string;
-}
-
-const DatePicker = ({ className }: DatePickerProps) => {
+const DatePicker = () => {
   const dispatch = useAppDispatch();
   const selectedDate = useAppSelector((state) => state.calendar.selectedDate);
 
   const customCaptionLabel = (props: HTMLAttributes<HTMLSpanElement>) => {
-    return <span {...props}>{getYearMonth(selectedDate)}</span>;
+    return (
+      <span {...props} className={`text-sm ml-3 ${props.className}`}>
+        {getYearMonth(selectedDate)}
+      </span>
+    );
+  };
+
+  const customNextButton = (props: HTMLAttributes<HTMLButtonElement>) => {
+    return (
+      <button {...props}>
+        <MdKeyboardArrowRight />
+      </button>
+    );
+  };
+
+  const customPrevButton = (props: HTMLAttributes<HTMLButtonElement>) => {
+    return (
+      <button {...props}>
+        <MdKeyboardArrowLeft />
+      </button>
+    );
   };
 
   const onSelectHandler = (date: Date | undefined) => {
@@ -27,9 +44,13 @@ const DatePicker = ({ className }: DatePickerProps) => {
   return (
     <DayPicker
       classNames={{
-        root: className,
-        month: "w-full",
-        month_grid: "w-full table-fixed",
+        month_grid: "border-separate border-spacing-2",
+        weekday: "w-6 h-6 text-[0.75rem] font-medium",
+        day: "w-6 h-6 text-[0.75rem]",
+        day_button:
+          "w-full h-full hover:bg-light-gray rounded-full cursor-pointer",
+        today: "w-6 h-6 rounded-full bg-blue-500 text-white",
+        selected: "w-6 h-6 rounded-full bg-sky-200",
       }}
       animate
       locale={ko}
@@ -38,7 +59,11 @@ const DatePicker = ({ className }: DatePickerProps) => {
       selected={selectedDate}
       onSelect={onSelectHandler}
       showOutsideDays
-      components={{ CaptionLabel: customCaptionLabel }}
+      components={{
+        NextMonthButton: customNextButton,
+        PreviousMonthButton: customPrevButton,
+        CaptionLabel: customCaptionLabel,
+      }}
     />
   );
 };
