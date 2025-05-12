@@ -16,7 +16,7 @@ import { getMonthDayWeekday, getYearMonth } from "../utils/date";
 
 const Header = () => {
   return (
-    <div className="h-16 w-full bg-extralight-gray p-2 flex justify-between">
+    <div className="h-16 w-ful p-2 flex justify-between">
       <div className="flex items-center gap-x-1">
         <div className="flex items-center gap-2 mr-11">
           <IoMenuOutline size={25} className="ml-4" />

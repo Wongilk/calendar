@@ -4,3 +4,7 @@
   --color-extralight-gray: oklch(98.5% 0.002 247.839);
   --color-light-gray: oklch(92.8% 0.006 264.531);
 }
+
+.rdp-months {
+  width: 100% !important;
+}

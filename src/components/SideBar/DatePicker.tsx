@@ -3,12 +3,16 @@ import { type HTMLAttributes } from "react";
 import { DayPicker } from "react-day-picker";
 import { ko } from "react-day-picker/locale";
 import "react-day-picker/style.css";
-import { getYearMonth } from "../utils/date";
-import { useAppDispatch } from "../hooks/useAppDispatch";
-import { setSelectedDate } from "../features/calendar/calendarSlice";
-import { useAppSelector } from "../hooks/useAppSelector";
+import { getYearMonth } from "../../utils/date";
+import { useAppDispatch } from "../../hooks/useAppDispatch";
+import { setSelectedDate } from "../../features/calendar/calendarSlice";
+import { useAppSelector } from "../../hooks/useAppSelector";
 
-const DatePicker = () => {
+interface DatePickerProps {
+  className?: string;
+}
+
+const DatePicker = ({ className }: DatePickerProps) => {
   const dispatch = useAppDispatch();
   const selectedDate = useAppSelector((state) => state.calendar.selectedDate);
 
@@ -22,6 +26,11 @@ const DatePicker = () => {
 
   return (
     <DayPicker
+      classNames={{
+        root: className,
+        month: "w-full",
+        month_grid: "w-full table-fixed",
+      }}
       animate
       locale={ko}
       mode="single"

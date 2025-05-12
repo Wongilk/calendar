@@ -1,9 +1,9 @@
-import DatePicker from "../components/DatePicker";
+import SideBar from "../components/SideBar/SideBar";
 
 const Home = () => {
   return (
     <div>
-      <DatePicker />
+      <SideBar />
     </div>
   );
 };
