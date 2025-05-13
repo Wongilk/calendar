@@ -1,14 +1,18 @@
-import DatePicker from "./DatePicker";
 import { IoMdArrowDropdown } from "react-icons/io";
 import { HiPlus } from "react-icons/hi";
 import { useState } from "react";
+import DatePicker from "../sideBar/DatePicker";
+import Modal from "../modal/Modal";
+import EventFormModal from "./EventFormModal";
 
 const SideBar = () => {
   const [isDropDownVisible, setIsDropDownVisible] = useState<boolean>(false);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
   const toggleBtn = () => {
     setIsDropDownVisible((prev) => !prev);
   };
+
   return (
     <aside className="max-w-60 ml-6 mt-4">
       <button
@@ -26,13 +30,22 @@ const SideBar = () => {
               : "opacity-0 scale-90 pointer-events-none"
           }`}
         >
-          <div className="mt-2 py-3 px-4 hover:bg-light-gray">이벤트</div>
+          <div
+            className="mt-2 py-3 px-4 hover:bg-light-gray"
+            onClick={() => setIsModalOpen(true)}
+          >
+            이벤트
+          </div>
           <div className="py-3 px-4 hover:bg-light-gray">할 일</div>
           <div className="mb-2 py-3 px-4 hover:bg-light-gray">약속 일정</div>
         </div>
       </button>
 
-      <DatePicker className="w-full mt-6" />
+      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+        <EventFormModal onClose={() => setIsModalOpen(false)} />
+      </Modal>
+
+      <DatePicker />
     </aside>
   );
 };

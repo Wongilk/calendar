@@ -1,9 +1,11 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
+import { getStartOfWeek } from "../../utils/date";
 
-interface DayEvent {
+export interface DayEvent {
   id: string;
   title: string;
-  time: string;
+  startDate: string;
+  endDate: string;
 }
 
 interface WeekEvents {
@@ -11,12 +13,12 @@ interface WeekEvents {
 }
 
 interface CalendarState {
-  selectedDate: Date | undefined;
+  selectedDate: string;
   weekEvents: WeekEvents;
 }
 
 const initialState: CalendarState = {
-  selectedDate: new Date(),
+  selectedDate: new Date().toISOString(),
   weekEvents: {},
 };
 
@@ -24,11 +26,19 @@ export const calendarSlice = createSlice({
   name: "calendar",
   initialState,
   reducers: {
-    setSelectedDate: (state, action: PayloadAction<Date | undefined>) => {
+    setSelectedDate: (state, action: PayloadAction<string>) => {
       state.selectedDate = action.payload;
+    },
+    addEvent: (state, action: PayloadAction<DayEvent>) => {
+      const event = action.payload;
+      const weekStart = getStartOfWeek(event.startDate);
+      if (!state.weekEvents[weekStart]) {
+        state.weekEvents[weekStart] = [];
+      }
+      state.weekEvents[weekStart] = [...state.weekEvents[weekStart], event];
     },
   },
 });
 
-export const { setSelectedDate } = calendarSlice.actions;
+export const { setSelectedDate, addEvent } = calendarSlice.actions;
 export default calendarSlice.reducer;

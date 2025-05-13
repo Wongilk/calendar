@@ -12,6 +12,17 @@ export const generateTimeOptions = (): string[] => {
       options.push(`${isAm} ${hourStr}:${minuteStr}`);
     }
   }
-  console.log(options);
   return options;
+};
+
+export const parseTimeTo24 = (
+  timeStr: string
+): { hours: number; minutes: number } => {
+  const [isAm, hourAndMinute] = timeStr.split(" ");
+  let [hours, minutes] = hourAndMinute.split(":").map(Number);
+
+  if (isAm === "오후" && hours !== 12) hours += 12;
+  if (isAm === "오전" && hours === 12) hours = 0;
+
+  return { hours, minutes };
 };
