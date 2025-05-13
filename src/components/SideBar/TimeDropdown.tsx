@@ -1,11 +1,16 @@
-interface DropdownProps {
+interface TimeDropdownProps {
   isOpen: boolean;
   options: string[];
   onChange: (v: string) => void;
   onClose: () => void;
 }
 
-const Dropdown = ({ isOpen, options, onChange, onClose }: DropdownProps) => {
+const TimeDropdown = ({
+  isOpen,
+  options,
+  onChange,
+  onClose,
+}: TimeDropdownProps) => {
   const optionClickHandler = (value: string) => {
     onChange(value);
     onClose();
@@ -30,4 +35,4 @@ const Dropdown = ({ isOpen, options, onChange, onClose }: DropdownProps) => {
   );
 };
 
-export default Dropdown;
+export default TimeDropdown;

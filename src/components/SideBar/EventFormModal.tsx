@@ -1,10 +1,10 @@
 import { HiMenuAlt4 } from "react-icons/hi";
 import { IoCloseSharp } from "react-icons/io5";
 import TimeSelection from "./TimeSelection";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Tabs, { type Tab } from "../tabs/Tabs";
 import { useAppSelector } from "../../hooks/useAppSelector";
-import { combineDateAndTime } from "../../utils/date";
+import { combineDateAndTime, getCurrentAndNextTimes } from "../../utils/date";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
 import { addEvent, type DayEvent } from "../../features/calendar/calendarSlice";
 import { v4 as uuidv4 } from "uuid";
@@ -14,19 +14,32 @@ interface EventFormModalProps {
 }
 
 const EventFormModal = ({ onClose }: EventFormModalProps) => {
-  const [title, setTitle] = useState<string>("");
-  const [startTime, setStartTime] = useState<string>("오전 12:00");
-  const [endTime, setEndTime] = useState<string>("오전 12:00");
-  const selectedDate = useAppSelector((state) => state.calendar.selectedDate);
-  const nextDay = new Date(selectedDate);
-  nextDay.setDate(new Date(selectedDate).getDate() + 1);
-  const [startDate, setStartDate] = useState<string>(selectedDate);
-  const [endDate, setEndDate] = useState<string>(nextDay.toISOString());
   const dispatch = useAppDispatch();
+  const selectedDate = useAppSelector((state) => state.calendar.selectedDate);
+
+  const [isEndBeforeStart, setIsEndBeforeStart] = useState<boolean>(false);
+  const [title, setTitle] = useState<string>("");
+  const [startTime, setStartTime] = useState<string>(
+    getCurrentAndNextTimes()[0]
+  );
+  const [endTime, setEndTime] = useState<string>(getCurrentAndNextTimes()[1]);
+  const [startDate, setStartDate] = useState<string>(selectedDate);
+
+  const nextDayISO = new Date(selectedDate);
+  nextDayISO.setDate(new Date(selectedDate).getDate() + 1);
+  const [endDate, setEndDate] = useState<string>(nextDayISO.toISOString());
 
   const onChangeTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTitle(e.target.value);
   };
+
+  useEffect(() => {
+    const start = combineDateAndTime(new Date(startDate), startTime);
+    const end = combineDateAndTime(new Date(endDate), endTime);
+
+    if (end < start) setIsEndBeforeStart(true);
+    else setIsEndBeforeStart(false);
+  }, [startDate, startTime, endDate, endTime]);
 
   const tabs: Tab[] = [
     {
@@ -41,45 +54,24 @@ const EventFormModal = ({ onClose }: EventFormModalProps) => {
           setEndDate={setEndDate}
           setStartTime={setStartTime}
           setEndTime={setEndTime}
+          isEndBeforeStart={isEndBeforeStart}
         />
       ),
     },
     {
       label: "할 일",
-      content: (
-        <TimeSelection
-          startDate={startDate}
-          endDate={endDate}
-          startTime={startTime}
-          endTime={endTime}
-          setStartDate={setStartDate}
-          setEndDate={setEndDate}
-          setStartTime={setStartTime}
-          setEndTime={setEndTime}
-        />
-      ),
+      content: <></>,
     },
     {
       label: "약속 일정",
-      content: (
-        <TimeSelection
-          startDate={startDate}
-          endDate={endDate}
-          startTime={startTime}
-          endTime={endTime}
-          setStartDate={setStartDate}
-          setEndDate={setEndDate}
-          setStartTime={setStartTime}
-          setEndTime={setEndTime}
-        />
-      ),
+      content: <></>,
     },
   ];
 
   const addEventHandler = () => {
     const payload: DayEvent = {
       id: uuidv4(),
-      title,
+      title: title === "" ? "(제목 없음)" : title,
       startDate: combineDateAndTime(new Date(startDate), startTime),
       endDate: combineDateAndTime(new Date(endDate), endTime),
     };
@@ -120,8 +112,13 @@ const EventFormModal = ({ onClose }: EventFormModalProps) => {
           옵션 더보기
         </button>
         <button
-          className="bg-blue-600 rounded-full w-20 h-10 text-white font-semibold cursor-pointer hover:brightness-90"
+          className={`rounded-full w-20 h-10 text-white font-semibold hover:brightness-90 ${
+            isEndBeforeStart
+              ? "bg-gray-300 cursor-not-allowed"
+              : "bg-blue-600 cursor-pointer"
+          }`}
           onClick={addEventHandler}
+          disabled={isEndBeforeStart}
         >
           저장
         </button>

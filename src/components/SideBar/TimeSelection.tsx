@@ -2,9 +2,9 @@ import { MdOutlineAccessTime } from "react-icons/md";
 import { useAppSelector } from "../../hooks/useAppSelector";
 import { getMonthDayWeekday } from "../../utils/date";
 import { useState } from "react";
-import { generateTimeOptions } from "../../utils/time";
-import Dropdown from "../dropdown/Dropdown";
+import { generateTimeOptions, parseTimeTo24 } from "../../utils/time";
 import DatePicker from "./DatePicker";
+import TimeDropdown from "./TimeDropdown";
 
 interface TimeSelectionProps {
   startDate: string;
@@ -15,7 +15,9 @@ interface TimeSelectionProps {
   setEndDate: (end: string) => void;
   setStartTime: (end: string) => void;
   setEndTime: (end: string) => void;
+  isEndBeforeStart: boolean;
 }
+type ActivePicker = "startDate" | "startTime" | "endTime" | "endDate" | null;
 
 const TimeSelection = ({
   startDate,
@@ -26,14 +28,52 @@ const TimeSelection = ({
   setEndDate,
   setStartTime,
   setEndTime,
+  isEndBeforeStart,
 }: TimeSelectionProps) => {
   const [changeMode, setChangeMode] = useState<boolean>(false);
   const selectedDate = useAppSelector((state) => state.calendar.selectedDate);
-  const nextDay = new Date(selectedDate);
-  nextDay.setDate(new Date(selectedDate).getDate() + 1);
-  const [activePicker, setActivePicker] = useState<
-    "startDate" | "startTime" | "endTime" | "endDate" | null
-  >(null);
+  const [activePicker, setActivePicker] = useState<ActivePicker>(null);
+
+  const { hours: sh, minutes: sm } = parseTimeTo24(startTime);
+  const { hours: eh, minutes: em } = parseTimeTo24(endTime);
+  const isNextDay = sh * 60 + sm >= eh * 60 + em;
+
+  const onSelectDateHandler = (date: Date) => {
+    if (activePicker === "startDate") setStartDate(date.toISOString());
+    else if (activePicker === "endDate") setEndDate(date.toISOString());
+    setActivePicker(null);
+  };
+
+  const PickerButton = ({
+    value,
+    pickerKey,
+    children,
+  }: {
+    value: string;
+    pickerKey: ActivePicker;
+    children?: React.ReactNode;
+  }) => (
+    <div className="relative">
+      <div
+        onClick={() =>
+          setActivePicker(activePicker === pickerKey ? null : pickerKey)
+        }
+        className={`p-2 rounded-md text-sm hover:brightness-90 cursor-pointer ${
+          isEndBeforeStart &&
+          (pickerKey === "endTime" || pickerKey === "endDate")
+            ? "bg-red-200"
+            : "bg-gray-300 "
+        }`}
+      >
+        {value}
+      </div>
+      {activePicker === pickerKey && (
+        <div className="absolute z-10 mt-2 bg-white shadow-lg min-w-60">
+          {children}
+        </div>
+      )}
+    </div>
+  );
 
   if (!changeMode) {
     return (
@@ -49,9 +89,6 @@ const TimeSelection = ({
           <span className="pb-0.5 hover:border-b">{startTime}</span>
           <span>-</span>
           <span className="pb-0.5 hover:border-b">{endTime}</span>
-          <span className="pb-0.5 hover:border-b">
-            {getMonthDayWeekday(nextDay)}
-          </span>
           <div>
             <span className="text-[0.75rem]">시간대 · 반복안함</span>
           </div>
@@ -60,87 +97,45 @@ const TimeSelection = ({
     );
   }
 
-  const onSelectDateHandler = (date: Date) => {
-    if (activePicker === "startDate") setStartDate(date.toISOString());
-    else setEndDate(date.toISOString());
-    setActivePicker(null);
-  };
-
   return (
     <div className="relative flex items-center">
       <MdOutlineAccessTime size={20} className="mr-5" />
       <div className="flex gap-1.5 items-center">
-        <div className="relative">
-          <div
-            onClick={() =>
-              setActivePicker(activePicker === "startDate" ? null : "startDate")
-            }
-            className="bg-gray-300 p-2 rounded-md text-sm hover:brightness-90 cursor-pointer"
-          >
-            {getMonthDayWeekday(new Date(startDate))}
-          </div>
-          {activePicker === "startDate" && (
-            <div className="absolute min-w-60 bg-white mt-2 shadow-lg">
-              <DatePicker onSelect={onSelectDateHandler} />
-            </div>
-          )}
-        </div>
+        <PickerButton
+          value={getMonthDayWeekday(new Date(startDate))}
+          pickerKey="startDate"
+        >
+          <DatePicker onSelect={onSelectDateHandler} />
+        </PickerButton>
 
-        <div className="relative">
-          <div
-            onClick={() =>
-              setActivePicker(activePicker === "startTime" ? null : "startTime")
-            }
-            className="bg-gray-300 p-2 rounded-md text-sm hover:brightness-90 cursor-pointer"
-          >
-            {startTime}
-          </div>
-          <div className="absolute">
-            <Dropdown
-              options={generateTimeOptions()}
-              onChange={setStartTime}
-              isOpen={activePicker === "startTime"}
-              onClose={() => setActivePicker(null)}
-            />
-          </div>
-        </div>
+        <PickerButton value={startTime} pickerKey="startTime">
+          <TimeDropdown
+            options={generateTimeOptions(startTime)}
+            onChange={setStartTime}
+            isOpen
+            onClose={() => setActivePicker(null)}
+          />
+        </PickerButton>
 
         <span>-</span>
 
-        <div className="relative">
-          <div
-            onClick={() =>
-              setActivePicker(activePicker === "endTime" ? null : "endTime")
-            }
-            className="bg-gray-300 p-2 rounded-md text-sm hover:brightness-90 cursor-pointer"
-          >
-            {endTime}
-          </div>
-          <div className="absolute">
-            <Dropdown
-              options={generateTimeOptions()}
-              onChange={setEndTime}
-              isOpen={activePicker === "endTime"}
-              onClose={() => setActivePicker(null)}
-            />
-          </div>
-        </div>
+        <PickerButton value={endTime} pickerKey="endTime">
+          <TimeDropdown
+            options={generateTimeOptions(endTime)}
+            onChange={setEndTime}
+            isOpen
+            onClose={() => setActivePicker(null)}
+          />
+        </PickerButton>
 
-        <div className="relative">
-          <div
-            onClick={() =>
-              setActivePicker(activePicker === "endDate" ? null : "endDate")
-            }
-            className="bg-gray-300 p-2 rounded-md text-sm hover:brightness-90 cursor-pointer"
+        {isNextDay && (
+          <PickerButton
+            value={getMonthDayWeekday(new Date(endDate))}
+            pickerKey="endDate"
           >
-            {getMonthDayWeekday(new Date(endDate))}
-          </div>
-          {activePicker === "endDate" && (
-            <div className="absolute min-w-60 bg-white mt-2 shadow-lg">
-              <DatePicker onSelect={onSelectDateHandler} />
-            </div>
-          )}
-        </div>
+            <DatePicker onSelect={onSelectDateHandler} />
+          </PickerButton>
+        )}
       </div>
     </div>
   );
