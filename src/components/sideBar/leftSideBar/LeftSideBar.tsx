@@ -1,11 +1,11 @@
 import { IoMdArrowDropdown } from "react-icons/io";
 import { HiPlus } from "react-icons/hi";
 import { useState } from "react";
-import DatePicker from "../sideBar/DatePicker";
-import Modal from "../modal/Modal";
+import DatePicker from "./DatePicker";
+import Modal from "../../modal/Modal";
 import EventFormModal from "./EventFormModal";
 
-const SideBar = () => {
+const LeftSideBar = () => {
   const [isDropDownVisible, setIsDropDownVisible] = useState<boolean>(false);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
@@ -14,9 +14,9 @@ const SideBar = () => {
   };
 
   return (
-    <aside className="max-w-60 ml-6 mt-4">
+    <aside className="max-w-60 mx-3 mt-4">
       <button
-        className="flex items-center justify-between gap-2 rounded-2xl px-5 py-4 bg-white border border-gray-300 shadow-xl cursor-pointer hover:bg-light-gray transition relative"
+        className="flex items-center justify-between gap-2 rounded-2xl px-5 py-4 bg-white border border-gray-300 shadow-md cursor-pointer hover:bg-light-gray transition relative"
         onClick={toggleBtn}
       >
         <HiPlus size={25} />
@@ -45,9 +45,11 @@ const SideBar = () => {
         <EventFormModal onClose={() => setIsModalOpen(false)} />
       </Modal>
 
-      <DatePicker />
+      <div className="mt-4 w-56">
+        <DatePicker />
+      </div>
     </aside>
   );
 };
 
-export default SideBar;
+export default LeftSideBar;

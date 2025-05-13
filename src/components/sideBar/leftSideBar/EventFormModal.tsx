@@ -2,11 +2,17 @@ import { HiMenuAlt4 } from "react-icons/hi";
 import { IoCloseSharp } from "react-icons/io5";
 import TimeSelection from "./TimeSelection";
 import React, { useEffect, useState } from "react";
-import Tabs, { type Tab } from "../tabs/Tabs";
-import { useAppSelector } from "../../hooks/useAppSelector";
-import { combineDateAndTime, getCurrentAndNextTimes } from "../../utils/date";
-import { useAppDispatch } from "../../hooks/useAppDispatch";
-import { addEvent, type DayEvent } from "../../features/calendar/calendarSlice";
+import Tabs, { type Tab } from "../../tabs/Tabs";
+import { useAppSelector } from "../../../hooks/useAppSelector";
+import {
+  combineDateAndTime,
+  getCurrentAndNextTimes,
+} from "../../../utils/date";
+import { useAppDispatch } from "../../../hooks/useAppDispatch";
+import {
+  addEvent,
+  type DayEvent,
+} from "../../../features/calendar/calendarSlice";
 import { v4 as uuidv4 } from "uuid";
 
 interface EventFormModalProps {

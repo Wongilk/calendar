@@ -7,7 +7,7 @@ interface LayoutProps {
 
 const Layout = ({ children }: LayoutProps) => {
   return (
-    <div className="bg-extralight-gray">
+    <div className="bg-extralight-gray h-screen">
       <header>
         <Header />
       </header>

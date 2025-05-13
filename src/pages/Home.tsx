@@ -1,9 +1,13 @@
-import SideBar from "../components/SideBar/SideBar";
+import WeeklyCalendar from "../components/mainView/WeeklyCalendar";
+import LeftSideBar from "../components/sideBar/leftSideBar/LeftSideBar";
+import RightSideBar from "../components/sideBar/rightSideBar/RightSideBar";
 
 const Home = () => {
   return (
-    <div>
-      <SideBar />
+    <div className="flex">
+      <LeftSideBar />
+      <WeeklyCalendar />
+      <RightSideBar />
     </div>
   );
 };
