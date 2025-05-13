@@ -4,8 +4,7 @@ export const getYearMonth = (date: Date = new Date()): string => {
   return `${year}년 ${month}월`;
 };
 
-export const getMonthDayWeekday = (): string => {
-  const date = new Date();
+export const getMonthDayWeekday = (date: Date = new Date()): string => {
   const month = date.getMonth() + 1;
   const day = date.getDate();
   const weekdayIndex = date.getDay();
