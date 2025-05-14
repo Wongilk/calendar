@@ -12,9 +12,50 @@ import {
 } from "react-icons/io";
 import { GoQuestion } from "react-icons/go";
 import { FaRegCircleUser } from "react-icons/fa6";
-import { getMonthDayWeekday, getYearMonth } from "../utils/date";
+import {
+  getLastOfWeek,
+  getMonthDayWeekday,
+  getStartOfWeek,
+  getYearMonth,
+} from "../utils/date";
+import { useAppSelector } from "../hooks/useAppSelector";
+import { useDispatch } from "react-redux";
+import { setSelectedDate } from "../features/calendar/calendarSlice";
 
 const Header = () => {
+  const dispatch = useDispatch();
+  const selectedDate = useAppSelector((state) => state.calendar.selectedDate);
+  const handlePrevClick = () => {
+    const prevWeek = new Date(selectedDate);
+    prevWeek.setDate(prevWeek.getDate() - 7);
+    dispatch(setSelectedDate(prevWeek.toISOString()));
+  };
+
+  const handleNextClick = () => {
+    const nextWeek = new Date(selectedDate);
+    nextWeek.setDate(nextWeek.getDate() + 7);
+    dispatch(setSelectedDate(nextWeek.toISOString()));
+  };
+
+  const renderYearMonth = () => {
+    const firstDate = getStartOfWeek(selectedDate);
+    const firstMonth = new Date(firstDate).getMonth();
+    const lastDate = getLastOfWeek(selectedDate);
+    const lastMonth = new Date(lastDate).getMonth();
+
+    if (firstMonth == lastMonth) {
+      return (
+        <span className="text-xl">{getYearMonth(new Date(selectedDate))}</span>
+      );
+    } else {
+      return (
+        <span className="text-xl">
+          {getYearMonth(new Date(selectedDate))} - {lastMonth + 1}월
+        </span>
+      );
+    }
+  };
+
   return (
     <div className="h-16 w-ful p-2 flex justify-between">
       <div className="flex items-center gap-x-1">
@@ -35,13 +76,15 @@ const Header = () => {
           size={32}
           title="지난주"
           className="cursor-pointer hover:bg-light-gray rounded-full p-1"
+          onClick={handlePrevClick}
         />
         <MdKeyboardArrowRight
           size={32}
           title="다음주"
           className="cursor-pointer hover:bg-light-gray rounded-full p-1 mr-4"
+          onClick={handleNextClick}
         />
-        <span className="text-xl">{getYearMonth()}</span>
+        {renderYearMonth()}
       </div>
 
       <div className="flex items-center gap-2">

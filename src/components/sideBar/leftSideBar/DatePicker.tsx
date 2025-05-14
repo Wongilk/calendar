@@ -59,6 +59,7 @@ const DatePicker = ({ onSelect }: DatePickerProps) => {
       mode="single"
       weekStartsOn={1}
       selected={new Date(selectedDate)}
+      month={new Date(selectedDate)}
       onSelect={onSelectHandler}
       showOutsideDays
       components={{

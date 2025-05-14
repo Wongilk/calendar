@@ -28,6 +28,15 @@ export const getStartOfWeek = (date: string): string => {
   return weekStart.toISOString();
 };
 
+export const getLastOfWeek = (date: string): string => {
+  const d = new Date(date);
+  const day = d.getDay();
+  const diff = d.getDate() + (day === 0 ? 0 : 7 - day);
+  const weekEnd = new Date(d.setDate(diff));
+  weekEnd.setHours(23, 59, 59, 999);
+  return weekEnd.toISOString();
+};
+
 export const getCurrentAndNextDates = (baseDate: Date): [Date, Date] => {
   const base = new Date(baseDate);
   const start = new Date(base);
