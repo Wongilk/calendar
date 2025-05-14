@@ -10,15 +10,16 @@ import { splitEventByDay } from "../../utils/events";
 import Modal from "../modal/Modal";
 import EventDeletionModal from "../modal/event/EventDeletionModal";
 
-const days = ["월", "화", "수", "목", "금", "토", "일"];
+const DAYS = ["월", "화", "수", "목", "금", "토", "일"];
 
-const hours = Array.from({ length: 23 }, (_, i) => i + 1);
+const HOURS = Array.from({ length: 23 }, (_, i) => i + 1);
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
+const GRID_HEIGHT = 3;
 
 const formatHour = (hour: number) => {
-  const period = hour < 12 ? "오전" : "오후";
+  const isAm = hour < 12 ? "오전" : "오후";
   const hour12 = hour % 12 === 0 ? 12 : hour % 12;
-  return `${period} ${hour12}시`;
+  return `${isAm} ${hour12}시`;
 };
 
 const WeeklyCalendar = () => {
@@ -55,7 +56,7 @@ const WeeklyCalendar = () => {
     return frags.map((frag, idx) => {
       const start = new Date(frag.startDate);
       const end = new Date(frag.endDate);
-      const dayIdx = (start.getDay() + 6) % 7;
+      const dayIdx = (start.getDay() + 6) % DAYS.length;
       const startHourV = start.getHours() + start.getMinutes() / 60;
 
       const isEndOfDay =
@@ -65,21 +66,23 @@ const WeeklyCalendar = () => {
         end.getMilliseconds() === 0;
 
       const endHourV = isEndOfDay ? 24 : end.getHours() + end.getMinutes() / 60;
-      const height = (endHourV - startHourV) * 3;
+      const height = (endHourV - startHourV) * GRID_HEIGHT;
       return (
         <div
           key={`${frag.id}-${idx}`}
           className="absolute bg-blue-200 rounded p-1 text-xs text-center cursor-pointer"
           style={{
-            left: `${(dayIdx * (100 / 7)).toFixed(5)}%`,
-            top: `${startHourV * 3}rem`,
-            width: `${(100 / 7).toFixed(5)}%`,
+            left: `${(dayIdx * (100 / DAYS.length)).toFixed(5)}%`,
+            top: `${startHourV * GRID_HEIGHT}rem`,
+            width: `${(100 / DAYS.length).toFixed(5)}%`,
             height: `${height}rem`,
           }}
           onClick={() => handleEventClick(event)}
         >
           <div
-            className={`text-white text-left ${height > 3 ? "" : "flex gap-1"}`}
+            className={`text-white text-left ${
+              height > GRID_HEIGHT ? "" : "flex gap-1"
+            }`}
           >
             <span>{frag.title}</span>
             <div>
@@ -95,7 +98,7 @@ const WeeklyCalendar = () => {
   return (
     <div className="w-full bg-white rounded-4xl overflow-y-auto h-[calc(100vh-5rem)] text-gray-700">
       <div className="grid grid-cols-7 text-center pl-24 sticky top-0 z-10 bg-white">
-        {days.map((day, idx) => (
+        {DAYS.map((day, idx) => (
           <div
             key={day}
             className="flex flex-col justify-center gap-2 relative p-3"
@@ -114,7 +117,7 @@ const WeeklyCalendar = () => {
 
       <div className="flex">
         <div className="w-24">
-          {hours.map((hour) => (
+          {HOURS.map((hour) => (
             <div key={hour} className="h-12 relative">
               <span className="w-full absolute -bottom-2 left-1/2 -translate-x-1/2 text-[0.7rem] text-center font-semibold">
                 {formatHour(hour)}
@@ -127,21 +130,21 @@ const WeeklyCalendar = () => {
         <div
           className="w-full grid grid-cols-7 relative"
           style={{
-            gridTemplateRows: `repeat(${hours.length + 1}, ${3}rem)`,
+            gridTemplateRows: `repeat(${HOURS.length + 1}, ${GRID_HEIGHT}rem)`,
           }}
         >
-          {hours.map((_, rowIdx) => (
+          {HOURS.map((_, rowIdx) => (
             <div
               key={rowIdx}
               className="absolute -left-2 w-full border-b border-gray-200"
-              style={{ top: `${(rowIdx + 1) * 3}rem` }}
+              style={{ top: `${(rowIdx + 1) * GRID_HEIGHT}rem` }}
             />
           ))}
-          {days.map((_, colIdx) => (
+          {DAYS.map((_, colIdx) => (
             <div
               key={colIdx}
               className="absolute top-0 h-full border-l border-gray-200"
-              style={{ left: `${(colIdx * (100 / 7)).toFixed(5)}%` }}
+              style={{ left: `${(colIdx * (100 / DAYS.length)).toFixed(5)}%` }}
             />
           ))}
           {renderShortEvents}
