@@ -1,6 +1,8 @@
-import { type HTMLAttributes } from "react";
-
-import { DayPicker } from "react-day-picker";
+import {
+  DayPicker,
+  type NextMonthButtonProps,
+  type PreviousMonthButtonProps,
+} from "react-day-picker";
 import { ko } from "react-day-picker/locale";
 import "react-day-picker/style.css";
 import { useAppDispatch } from "../../../hooks/useAppDispatch";
@@ -17,17 +19,27 @@ const DatePicker = ({ onSelect }: DatePickerProps) => {
   const dispatch = useAppDispatch();
   const selectedDate = useAppSelector((state) => state.calendar.selectedDate);
 
-  const customNextButton = (props: HTMLAttributes<HTMLButtonElement>) => {
+  const moveWeek = (offset: -1 | 1) => {
+    const d = new Date(selectedDate);
+    d.setDate(d.getDate() + offset * 7);
+    dispatch(setSelectedDate(d.toISOString()));
+  };
+
+  const customNextButton = (props: NextMonthButtonProps) => {
     return (
-      <button {...props}>
+      <button {...props} onClick={() => moveWeek(1)} className="cursor-pointer">
         <MdKeyboardArrowRight />
       </button>
     );
   };
 
-  const customPrevButton = (props: HTMLAttributes<HTMLButtonElement>) => {
+  const customPrevButton = (props: PreviousMonthButtonProps) => {
     return (
-      <button {...props}>
+      <button
+        {...props}
+        onClick={() => moveWeek(-1)}
+        className="cursor-pointer"
+      >
         <MdKeyboardArrowLeft />
       </button>
     );
@@ -59,8 +71,8 @@ const DatePicker = ({ onSelect }: DatePickerProps) => {
       mode="single"
       weekStartsOn={1}
       selected={new Date(selectedDate)}
-      month={new Date(selectedDate)}
       onSelect={handleDateSelect}
+      month={new Date(selectedDate)}
       showOutsideDays
       components={{
         NextMonthButton: customNextButton,

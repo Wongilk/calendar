@@ -1,14 +1,11 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import type { DayEvent } from "../../features/calendar/calendarSlice";
 import { useAppSelector } from "../../hooks/useAppSelector";
-import {
-  formatDateToKST,
-  getStartOfWeek,
-  getWeekDates,
-} from "../../utils/date";
+import { formatDateToKST, getWeekDates } from "../../utils/date";
 import { splitEventByDay } from "../../utils/events";
 import Modal from "../modal/Modal";
 import EventDeletionModal from "../modal/event/EventDeletionModal";
+import { selectEventsForWeek } from "../../selectors/eventSelector";
 
 const DAYS = ["월", "화", "수", "목", "금", "토", "일"];
 
@@ -24,11 +21,8 @@ const formatHour = (hour: number) => {
 
 const WeeklyCalendar = () => {
   const selectedDate = useAppSelector((state) => state.calendar.selectedDate);
-  const weekEventsMap = useAppSelector((state) => state.calendar.weekEvents);
-  const weekEvents = useMemo(
-    () => weekEventsMap[getStartOfWeek(selectedDate)] || [],
-    [weekEventsMap, selectedDate]
-  );
+  const weekEvents = useAppSelector((state) => selectEventsForWeek(state));
+
   const weekDates = getWeekDates(selectedDate);
   const [selectedEvent, setSelectedEvent] = useState<DayEvent | null>(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);

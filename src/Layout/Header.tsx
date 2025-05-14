@@ -46,12 +46,12 @@ const Header = () => {
 
     if (firstMonth == lastMonth) {
       return (
-        <span className="text-xl">{getYearMonth(new Date(selectedDate))}</span>
+        <span className="text-xl">{getYearMonth(new Date(firstDate))}</span>
       );
     } else {
       return (
         <span className="text-xl">
-          {getYearMonth(new Date(selectedDate))} - {lastMonth + 1}월
+          {getYearMonth(new Date(firstDate))} - {lastMonth + 1}월
         </span>
       );
     }

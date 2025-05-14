@@ -11,7 +11,7 @@ import {
   deleteEvent,
   type DayEvent,
 } from "../../../features/calendar/calendarSlice";
-import { formatDateToKST, getStartOfWeek } from "../../../utils/date";
+import { formatDateToKST } from "../../../utils/date";
 
 interface EventDeletionModalProps {
   event: DayEvent | null;
@@ -23,9 +23,10 @@ const EventDeletionModal = ({ event, onClose }: EventDeletionModalProps) => {
 
   if (!event) return <></>;
   const handleDeleteClick = () => {
-    dispatch(
-      deleteEvent({ id: event.id, startDate: getStartOfWeek(event.startDate) })
-    );
+    // dispatch(
+    //   deleteEvent({ id: event.id, startDate: getStartOfWeek(event.startDate) })
+    // );
+    dispatch(deleteEvent(event.id));
     onClose();
   };
   return (
