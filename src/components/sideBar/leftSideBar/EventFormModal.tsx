@@ -83,7 +83,7 @@ const EventFormModal = ({ onClose }: EventFormModalProps) => {
     },
   ];
 
-  const addEventHandler = () => {
+  const handleEventAdd = () => {
     const payload: DayEvent = {
       id: uuidv4(),
       title: title === "" ? "(제목 없음)" : title,
@@ -135,7 +135,7 @@ const EventFormModal = ({ onClose }: EventFormModalProps) => {
               ? "bg-gray-300 cursor-not-allowed"
               : "bg-blue-600 cursor-pointer"
           }`}
-          onClick={addEventHandler}
+          onClick={handleEventAdd}
           disabled={isEndBeforeStart}
         >
           저장

@@ -34,7 +34,7 @@ const TimeSelection = ({
   const selectedDate = useAppSelector((state) => state.calendar.selectedDate);
   const [activePicker, setActivePicker] = useState<ActivePicker>(null);
 
-  const onSelectDateHandler = (date: Date) => {
+  const handleDateSelect = (date: Date) => {
     if (activePicker === "startDate") setStartDate(date);
     else if (activePicker === "endDate") setEndDate(date);
 
@@ -108,7 +108,7 @@ const TimeSelection = ({
           value={getMonthDayWeekday(new Date(startDate))}
           pickerKey="startDate"
         >
-          <DatePicker onSelect={onSelectDateHandler} />
+          <DatePicker onSelect={handleDateSelect} />
         </PickerButton>
 
         <PickerButton value={formatTime(startTime)} pickerKey="startTime">
@@ -148,7 +148,7 @@ const TimeSelection = ({
             value={getMonthDayWeekday(new Date(endDate))}
             pickerKey="endDate"
           >
-            <DatePicker onSelect={onSelectDateHandler} />
+            <DatePicker onSelect={handleDateSelect} />
           </PickerButton>
         }
       </div>

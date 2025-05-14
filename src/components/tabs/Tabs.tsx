@@ -13,7 +13,7 @@ interface TabsProps {
 const Tabs = ({ tabs, tabsClassname, contentClassname }: TabsProps) => {
   const [activeTab, setActiveTab] = useState<number>(0);
 
-  const tabClickHandler = (index: number) => {
+  const handleTabClick = (index: number) => {
     setActiveTab(index);
   };
   return (
@@ -23,7 +23,7 @@ const Tabs = ({ tabs, tabsClassname, contentClassname }: TabsProps) => {
           return (
             <div
               key={tab.label}
-              onClick={() => tabClickHandler(index)}
+              onClick={() => handleTabClick(index)}
               className={`cursor-pointer text-xs font-semibold px-2 py-2.5 rounded-lg 
                 hover:brightness-90
                 ${index == activeTab ? "bg-sky-200" : "bg-light-gray"}`}

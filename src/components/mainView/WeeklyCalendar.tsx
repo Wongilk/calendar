@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import type { DayEvent } from "../../features/calendar/calendarSlice";
 import { useAppSelector } from "../../hooks/useAppSelector";
 import {
@@ -23,8 +23,10 @@ const formatHour = (hour: number) => {
 
 const WeeklyCalendar = () => {
   const selectedDate = useAppSelector((state) => state.calendar.selectedDate);
-  const weekEvents = useAppSelector(
-    (state) => state.calendar.weekEvents[getStartOfWeek(selectedDate)] || []
+  const weekEventsMap = useAppSelector((state) => state.calendar.weekEvents);
+  const weekEvents = useMemo(
+    () => weekEventsMap[getStartOfWeek(selectedDate)] || [],
+    [weekEventsMap, selectedDate]
   );
   const weekDates = getWeekDates(selectedDate);
   const [selectedEvent, setSelectedEvent] = useState<DayEvent | null>(null);

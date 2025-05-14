@@ -33,7 +33,7 @@ const DatePicker = ({ onSelect }: DatePickerProps) => {
     );
   };
 
-  const onSelectHandler = (date: Date) => {
+  const handleDateSelect = (date: Date) => {
     if (onSelect) onSelect(date);
     else dispatch(setSelectedDate(date.toISOString()));
   };
@@ -60,7 +60,7 @@ const DatePicker = ({ onSelect }: DatePickerProps) => {
       weekStartsOn={1}
       selected={new Date(selectedDate)}
       month={new Date(selectedDate)}
-      onSelect={onSelectHandler}
+      onSelect={handleDateSelect}
       showOutsideDays
       components={{
         NextMonthButton: customNextButton,

@@ -19,7 +19,7 @@ const TimeDropdown = ({
   onChange,
   onClose,
 }: TimeDropdownProps) => {
-  const optionClickHandler = (value: Date) => {
+  const handleOptionClick = (value: Date) => {
     onChange(value);
     onClose();
   };
@@ -32,7 +32,7 @@ const TimeDropdown = ({
             <li
               key={idx}
               className="py-3 px-4 hover:bg-light-gray cursor-pointer text-sm"
-              onClick={() => optionClickHandler(option.date)}
+              onClick={() => handleOptionClick(option.date)}
             >
               {formatTime(option.date)}
               {isSameDay && option.elapsedMinutes != undefined && (
