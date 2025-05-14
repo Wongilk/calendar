@@ -1,7 +1,10 @@
+import { useState } from "react";
 import type { DayEvent } from "../../features/calendar/calendarSlice";
 import { useAppSelector } from "../../hooks/useAppSelector";
 import { getStartOfWeek, getWeekDates } from "../../utils/date";
 import { splitEventByDay } from "../../utils/events";
+import Modal from "../modal/Modal";
+import EventDeletionModal from "./EventDeletionModal";
 
 const days = ["월", "화", "수", "목", "금", "토", "일"];
 
@@ -20,6 +23,13 @@ const WeeklyCalendar = () => {
     (state) => state.calendar.weekEvents[getStartOfWeek(selectedDate)] || []
   );
   const weekDates = getWeekDates(selectedDate);
+  const [selectedEvent, setSelectedEvent] = useState<DayEvent | null>(null);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
+
+  const handleEventClick = (event: DayEvent) => {
+    setSelectedEvent(event);
+    setIsDeleteModalOpen(true);
+  };
 
   const shortEvents = weekEvents.filter((event) => {
     const start = new Date(event.startDate).getTime();
@@ -27,13 +37,13 @@ const WeeklyCalendar = () => {
     return end - start <= MS_PER_DAY;
   });
 
-  // const longEvents = weekEvents.filter((event) => {
-  //   const start = new Date(event.startDate).getTime();
-  //   const end = new Date(event.endDate).getTime();
-  //   return end - start > MS_PER_DAY;
-  // });
+  const longEvents = weekEvents.filter((event) => {
+    const start = new Date(event.startDate).getTime();
+    const end = new Date(event.endDate).getTime();
+    return end - start > MS_PER_DAY;
+  });
 
-  const renderEvents = shortEvents.map((event: DayEvent) => {
+  const renderShortEvents = shortEvents.map((event: DayEvent) => {
     const frags = splitEventByDay(event);
 
     return frags.map((frag, idx) => {
@@ -52,13 +62,14 @@ const WeeklyCalendar = () => {
       return (
         <div
           key={`${frag.id}-${idx}`}
-          className="absolute bg-blue-200 rounded p-1 text-xs text-center"
+          className="absolute bg-blue-200 rounded p-1 text-xs text-center cursor-pointer"
           style={{
             left: `${(dayIdx * (100 / 7)).toFixed(5)}%`,
             top: `${startHourV * 3}rem`,
-            width: `${(100 / 7).toFixed(4)}%`,
+            width: `${(100 / 7).toFixed(5)}%`,
             height: `${(endHourV - startHourV) * 3}rem`,
           }}
+          onClick={() => handleEventClick(event)}
         >
           {frag.title}
         </div>
@@ -82,6 +93,7 @@ const WeeklyCalendar = () => {
         <span className="absolute bottom-0 left-7 text-[0.75rem] font-semibold">
           GMT +09
         </span>
+
         <div className="absolute bottom-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-gray-600 to-transparent"></div>
       </div>
 
@@ -117,10 +129,19 @@ const WeeklyCalendar = () => {
               style={{ left: `${(colIdx * (100 / 7)).toFixed(5)}%` }}
             />
           ))}
-
-          {renderEvents}
+          {renderShortEvents}
         </div>
       </div>
+
+      <Modal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+      >
+        <EventDeletionModal
+          event={selectedEvent}
+          onClose={() => setIsDeleteModalOpen(false)}
+        />
+      </Modal>
     </div>
   );
 };

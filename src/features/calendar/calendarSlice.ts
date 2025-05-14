@@ -35,10 +35,27 @@ export const calendarSlice = createSlice({
       if (!state.weekEvents[weekStart]) {
         state.weekEvents[weekStart] = [];
       }
-      state.weekEvents[weekStart] = [...state.weekEvents[weekStart], event];
+      state.weekEvents[weekStart].push(event);
+    },
+    deleteEvent: (
+      state,
+      action: PayloadAction<{ id: string; startDate: string }>
+    ) => {
+      const { id, startDate } = action.payload;
+      const weekStart = getStartOfWeek(startDate);
+
+      if (!state.weekEvents[weekStart]) return;
+
+      state.weekEvents[weekStart] = state.weekEvents[weekStart].filter(
+        (event) => event.id !== id
+      );
+
+      if (state.weekEvents[weekStart].length === 0) {
+        delete state.weekEvents[weekStart];
+      }
     },
   },
 });
 
-export const { setSelectedDate, addEvent } = calendarSlice.actions;
+export const { setSelectedDate, addEvent, deleteEvent } = calendarSlice.actions;
 export default calendarSlice.reducer;

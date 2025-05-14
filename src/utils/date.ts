@@ -63,3 +63,21 @@ export const getWeekDates = (dateStr: string): number[] => {
 
   return weekDates;
 };
+
+export const formatDateToKST = (isoString: string) => {
+  const date = new Date(isoString);
+
+  const year = date.getFullYear();
+  const month = date.getMonth() + 1;
+  const day = date.getDate();
+
+  const hours = date.getHours();
+  const minutes = date.getMinutes().toString().padStart(2, "0");
+
+  const isAM = hours < 12;
+  const hour12 = hours % 12 === 0 ? 12 : hours % 12;
+
+  return `${year}년 ${month}월 ${day}일, ${
+    isAM ? "오전" : "오후"
+  } ${hour12}:${minutes}`;
+};
