@@ -1,7 +1,11 @@
 import { useState } from "react";
 import type { DayEvent } from "../../features/calendar/calendarSlice";
 import { useAppSelector } from "../../hooks/useAppSelector";
-import { getStartOfWeek, getWeekDates } from "../../utils/date";
+import {
+  formatDateToKST,
+  getStartOfWeek,
+  getWeekDates,
+} from "../../utils/date";
 import { splitEventByDay } from "../../utils/events";
 import Modal from "../modal/Modal";
 import EventDeletionModal from "./EventDeletionModal";
@@ -59,6 +63,7 @@ const WeeklyCalendar = () => {
         end.getMilliseconds() === 0;
 
       const endHourV = isEndOfDay ? 24 : end.getHours() + end.getMinutes() / 60;
+      const height = (endHourV - startHourV) * 3;
       return (
         <div
           key={`${frag.id}-${idx}`}
@@ -67,11 +72,19 @@ const WeeklyCalendar = () => {
             left: `${(dayIdx * (100 / 7)).toFixed(5)}%`,
             top: `${startHourV * 3}rem`,
             width: `${(100 / 7).toFixed(5)}%`,
-            height: `${(endHourV - startHourV) * 3}rem`,
+            height: `${height}rem`,
           }}
           onClick={() => handleEventClick(event)}
         >
-          {frag.title}
+          <div
+            className={`text-white text-left ${height > 3 ? "" : "flex gap-1"}`}
+          >
+            <span>{frag.title}</span>
+            <div>
+              {formatDateToKST(frag.startDate).split(",")[1]} ~
+              {height > 3 && formatDateToKST(frag.endDate).split(",")[1]}
+            </div>
+          </div>
         </div>
       );
     });

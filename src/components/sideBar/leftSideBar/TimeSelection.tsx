@@ -99,7 +99,6 @@ const TimeSelection = ({
       </div>
     );
   }
-  //같은 날짜인 경우에만 elapsed 보여줘
 
   return (
     <div className="relative flex items-center">

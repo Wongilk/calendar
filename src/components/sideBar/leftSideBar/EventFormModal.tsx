@@ -25,10 +25,14 @@ const EventFormModal = ({ onClose }: EventFormModalProps) => {
 
   const [isEndBeforeStart, setIsEndBeforeStart] = useState<boolean>(false);
   const [title, setTitle] = useState<string>("");
-  const [startTime, setStartTime] = useState<Date>(getCurrentAndNextDates()[0]);
-  const [endTime, setEndTime] = useState<Date>(getCurrentAndNextDates()[1]);
+
+  const [currentDate, nextDate] = getCurrentAndNextDates(
+    new Date(selectedDate)
+  );
+  const [startTime, setStartTime] = useState<Date>(currentDate);
+  const [endTime, setEndTime] = useState<Date>(nextDate);
   const [startDate, setStartDate] = useState<Date>(new Date(selectedDate));
-  const [endDate, setEndDate] = useState<Date>(startDate);
+  const [endDate, setEndDate] = useState<Date>(new Date(selectedDate));
 
   const onChangeTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTitle(e.target.value);

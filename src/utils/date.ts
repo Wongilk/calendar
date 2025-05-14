@@ -28,10 +28,10 @@ export const getStartOfWeek = (date: string): string => {
   return weekStart.toISOString();
 };
 
-export const getCurrentAndNextDates = (): [Date, Date] => {
-  const now = new Date();
-  const start = new Date(now);
-  const end = new Date(now);
+export const getCurrentAndNextDates = (baseDate: Date): [Date, Date] => {
+  const base = new Date(baseDate);
+  const start = new Date(base);
+  const end = new Date(base);
 
   const minutes = start.getMinutes();
   if (minutes >= 30) {
