@@ -8,7 +8,7 @@ import {
 } from "../../utils/date";
 import { splitEventByDay } from "../../utils/events";
 import Modal from "../modal/Modal";
-import EventDeletionModal from "./EventDeletionModal";
+import EventDeletionModal from "../modal/event/EventDeletionModal";
 
 const days = ["월", "화", "수", "목", "금", "토", "일"];
 

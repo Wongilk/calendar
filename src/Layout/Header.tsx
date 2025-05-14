@@ -25,6 +25,7 @@ import { setSelectedDate } from "../features/calendar/calendarSlice";
 const Header = () => {
   const dispatch = useDispatch();
   const selectedDate = useAppSelector((state) => state.calendar.selectedDate);
+
   const handlePrevClick = () => {
     const prevWeek = new Date(selectedDate);
     prevWeek.setDate(prevWeek.getDate() - 7);

@@ -3,7 +3,7 @@ import { HiPlus } from "react-icons/hi";
 import { useState } from "react";
 import DatePicker from "./DatePicker";
 import Modal from "../../modal/Modal";
-import EventFormModal from "./EventFormModal";
+import EventAdditionModal from "../../modal/event/EventAdditionModal";
 
 const LeftSideBar = () => {
   const [isDropDownVisible, setIsDropDownVisible] = useState<boolean>(false);
@@ -42,7 +42,7 @@ const LeftSideBar = () => {
       </button>
 
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
-        <EventFormModal onClose={() => setIsModalOpen(false)} />
+        <EventAdditionModal onClose={() => setIsModalOpen(false)} />
       </Modal>
 
       <div className="mt-4 w-56">

@@ -1,6 +1,6 @@
 import { HiMenuAlt4 } from "react-icons/hi";
 import { IoCloseSharp } from "react-icons/io5";
-import TimeSelection from "./TimeSelection";
+import TimeSelection from "../../sideBar/leftSideBar/TimeSelection";
 import React, { useEffect, useState } from "react";
 import Tabs, { type Tab } from "../../tabs/Tabs";
 import { useAppSelector } from "../../../hooks/useAppSelector";
@@ -19,7 +19,7 @@ interface EventFormModalProps {
   onClose: () => void;
 }
 
-const EventFormModal = ({ onClose }: EventFormModalProps) => {
+const EventAdditionModal = ({ onClose }: EventFormModalProps) => {
   const dispatch = useAppDispatch();
   const selectedDate = useAppSelector((state) => state.calendar.selectedDate);
 
@@ -145,4 +145,4 @@ const EventFormModal = ({ onClose }: EventFormModalProps) => {
   );
 };
 
-export default EventFormModal;
+export default EventAdditionModal;

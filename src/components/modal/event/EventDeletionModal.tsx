@@ -1,16 +1,17 @@
 import { LuPencil } from "react-icons/lu";
-import {
-  deleteEvent,
-  type DayEvent,
-} from "../../features/calendar/calendarSlice";
+
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { CiMail } from "react-icons/ci";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { IoCloseSharp, IoShareSocialOutline } from "react-icons/io5";
 import { FaRegBell } from "react-icons/fa6";
 import { BiCalendarEvent } from "react-icons/bi";
-import { formatDateToKST, getStartOfWeek } from "../../utils/date";
-import { useAppDispatch } from "../../hooks/useAppDispatch";
+import { useAppDispatch } from "../../../hooks/useAppDispatch";
+import {
+  deleteEvent,
+  type DayEvent,
+} from "../../../features/calendar/calendarSlice";
+import { formatDateToKST, getStartOfWeek } from "../../../utils/date";
 
 interface EventDeletionModalProps {
   event: DayEvent | null;
