@@ -44,6 +44,16 @@ const RightSideBar = () => {
           />
         </div>
       )}
+
+      <div className="fixed right-0 bottom-2 w-6 h-10 bg-gray-300 border-l border-none rounded-l-full p-2 transition-all duration-300 hover:w-11 group">
+        <IoIosArrowBack
+          size={23}
+          className={`absolute left-1 cursor-pointer rounded-full p-1 transition-all duration-300 group-hover:left-2 ${
+            isOpen ? "rotate-180" : ""
+          }`}
+          onClick={toggleOpen}
+        />
+      </div>
     </>
   );
 };

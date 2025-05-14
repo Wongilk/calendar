@@ -2,19 +2,19 @@ import { MdOutlineAccessTime } from "react-icons/md";
 import { useAppSelector } from "../../../hooks/useAppSelector";
 import { getMonthDayWeekday } from "../../../utils/date";
 import { useState } from "react";
-import { generateTimeOptions, parseTimeTo24 } from "../../../utils/time";
+import { formatTime, generateTimeOptions } from "../../../utils/time";
 import DatePicker from "./DatePicker";
 import TimeDropdown from "./TimeDropdown";
 
 interface TimeSelectionProps {
-  startDate: string;
-  endDate: string;
-  startTime: string;
-  endTime: string;
-  setStartDate: (end: string) => void;
-  setEndDate: (end: string) => void;
-  setStartTime: (end: string) => void;
-  setEndTime: (end: string) => void;
+  startDate: Date;
+  endDate: Date;
+  startTime: Date;
+  endTime: Date;
+  setStartDate: (date: Date) => void;
+  setEndDate: (date: Date) => void;
+  setStartTime: (date: Date) => void;
+  setEndTime: (date: Date) => void;
   isEndBeforeStart: boolean;
 }
 type ActivePicker = "startDate" | "startTime" | "endTime" | "endDate" | null;
@@ -34,13 +34,10 @@ const TimeSelection = ({
   const selectedDate = useAppSelector((state) => state.calendar.selectedDate);
   const [activePicker, setActivePicker] = useState<ActivePicker>(null);
 
-  const { hours: sh, minutes: sm } = parseTimeTo24(startTime);
-  const { hours: eh, minutes: em } = parseTimeTo24(endTime);
-  const isNextDay = sh * 60 + sm >= eh * 60 + em;
-
   const onSelectDateHandler = (date: Date) => {
-    if (activePicker === "startDate") setStartDate(date.toISOString());
-    else if (activePicker === "endDate") setEndDate(date.toISOString());
+    if (activePicker === "startDate") setStartDate(date);
+    else if (activePicker === "endDate") setEndDate(date);
+
     setActivePicker(null);
   };
 
@@ -68,7 +65,13 @@ const TimeSelection = ({
         {value}
       </div>
       {activePicker === pickerKey && (
-        <div className="absolute z-10 mt-2 bg-white shadow-lg min-w-60">
+        <div
+          className={`absolute z-10 mt-2 bg-white shadow-lg ${
+            pickerKey === "startDate" || pickerKey === "endDate"
+              ? "w-60"
+              : "w-52"
+          } `}
+        >
           {children}
         </div>
       )}
@@ -86,9 +89,9 @@ const TimeSelection = ({
           <span className="pb-0.5 hover:border-b">
             {getMonthDayWeekday(new Date(selectedDate))}
           </span>
-          <span className="pb-0.5 hover:border-b">{startTime}</span>
+          <span className="pb-0.5 hover:border-b">{formatTime(startTime)}</span>
           <span>-</span>
-          <span className="pb-0.5 hover:border-b">{endTime}</span>
+          <span className="pb-0.5 hover:border-b">{formatTime(endTime)}</span>
           <div>
             <span className="text-[0.75rem]">시간대 · 반복안함</span>
           </div>
@@ -96,6 +99,7 @@ const TimeSelection = ({
       </div>
     );
   }
+  //같은 날짜인 경우에만 elapsed 보여줘
 
   return (
     <div className="relative flex items-center">
@@ -108,9 +112,10 @@ const TimeSelection = ({
           <DatePicker onSelect={onSelectDateHandler} />
         </PickerButton>
 
-        <PickerButton value={startTime} pickerKey="startTime">
+        <PickerButton value={formatTime(startTime)} pickerKey="startTime">
           <TimeDropdown
-            options={generateTimeOptions(startTime)}
+            options={generateTimeOptions(startTime, true, false)}
+            isSameDay={endDate.getDate() === startDate.getDate()}
             onChange={setStartTime}
             isOpen
             onClose={() => setActivePicker(null)}
@@ -119,23 +124,34 @@ const TimeSelection = ({
 
         <span>-</span>
 
-        <PickerButton value={endTime} pickerKey="endTime">
-          <TimeDropdown
-            options={generateTimeOptions(endTime)}
-            onChange={setEndTime}
-            isOpen
-            onClose={() => setActivePicker(null)}
-          />
+        <PickerButton value={formatTime(endTime)} pickerKey="endTime">
+          {startDate.getDate() === endDate.getDate() ? (
+            <TimeDropdown
+              options={generateTimeOptions(startTime, false, true)}
+              isSameDay={true}
+              onChange={setEndTime}
+              isOpen
+              onClose={() => setActivePicker(null)}
+            />
+          ) : (
+            <TimeDropdown
+              options={generateTimeOptions(endTime, true, false)}
+              isSameDay={false}
+              onChange={setEndTime}
+              isOpen
+              onClose={() => setActivePicker(null)}
+            />
+          )}
         </PickerButton>
 
-        {isNextDay && (
+        {
           <PickerButton
             value={getMonthDayWeekday(new Date(endDate))}
             pickerKey="endDate"
           >
             <DatePicker onSelect={onSelectDateHandler} />
           </PickerButton>
-        )}
+        }
       </div>
     </div>
   );

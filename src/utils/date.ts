@@ -1,5 +1,3 @@
-import { parseTimeTo24 } from "./time";
-
 export const getYearMonth = (date: Date = new Date()): string => {
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1);
@@ -15,14 +13,10 @@ export const getMonthDayWeekday = (date: Date = new Date()): string => {
   return `${month}월 ${day}일 (${weekday}요일)`;
 };
 
-export const combineDateAndTime = (date: Date, timeStr: string): string => {
-  const { hours, minutes } = parseTimeTo24(timeStr);
+export const combineDateAndTime = (date: Date, time: Date): Date => {
   const combined = new Date(date);
-  combined.setHours(hours);
-  combined.setMinutes(minutes);
-  combined.setSeconds(0);
-  combined.setMilliseconds(0);
-  return combined.toISOString();
+  combined.setHours(time.getHours(), time.getMinutes(), 0, 0);
+  return combined;
 };
 
 export const getStartOfWeek = (date: string): string => {
@@ -34,31 +28,38 @@ export const getStartOfWeek = (date: string): string => {
   return weekStart.toISOString();
 };
 
-export const getCurrentAndNextTimes = (): [string, string] => {
+export const getCurrentAndNextDates = (): [Date, Date] => {
   const now = new Date();
-  let hours = now.getHours();
-  let minutes = now.getMinutes();
+  const start = new Date(now);
+  const end = new Date(now);
 
+  const minutes = start.getMinutes();
   if (minutes >= 30) {
-    hours += 1;
-    minutes = 0;
+    start.setHours(start.getHours() + 1);
+    start.setMinutes(0, 0, 0);
   } else {
-    minutes = 30;
+    start.setMinutes(30, 0, 0);
   }
 
-  const nextHours = hours + (minutes == 0 ? 0 : 1);
-  const nextMinutes = (minutes + 30) % 60;
+  end.setTime(start.getTime() + 30 * 60 * 1000);
 
-  const formatTime = (hours: number, minutes: number): string => {
-    const period = hours < 12 ? "오전" : "오후";
-    const hour12 = hours % 12 === 0 ? 12 : hours % 12;
-    const hourStr = hour12 < 10 ? `0${hour12}` : `${hour12}`;
-    const minuteStr = minutes === 0 ? "00" : `${minutes}`;
-    return `${period} ${hourStr}:${minuteStr}`;
-  };
+  return [start, end];
+};
 
-  const startTime = formatTime(hours, minutes);
-  const endTime = formatTime(nextHours, nextMinutes);
+export const getWeekDates = (dateStr: string): number[] => {
+  const date = new Date(dateStr);
 
-  return [startTime, endTime];
+  const day = date.getDay();
+  const diffToMonday = day === 0 ? -6 : 1 - day;
+
+  const monday = new Date(date);
+  monday.setDate(date.getDate() + diffToMonday);
+
+  const weekDates = Array.from({ length: 7 }, (_, i) => {
+    const d = new Date(monday);
+    d.setDate(monday.getDate() + i);
+    return d.getDate();
+  });
+
+  return weekDates;
 };

@@ -6,7 +6,7 @@ import Tabs, { type Tab } from "../../tabs/Tabs";
 import { useAppSelector } from "../../../hooks/useAppSelector";
 import {
   combineDateAndTime,
-  getCurrentAndNextTimes,
+  getCurrentAndNextDates,
 } from "../../../utils/date";
 import { useAppDispatch } from "../../../hooks/useAppDispatch";
 import {
@@ -25,26 +25,31 @@ const EventFormModal = ({ onClose }: EventFormModalProps) => {
 
   const [isEndBeforeStart, setIsEndBeforeStart] = useState<boolean>(false);
   const [title, setTitle] = useState<string>("");
-  const [startTime, setStartTime] = useState<string>(
-    getCurrentAndNextTimes()[0]
-  );
-  const [endTime, setEndTime] = useState<string>(getCurrentAndNextTimes()[1]);
-  const [startDate, setStartDate] = useState<string>(selectedDate);
-
-  const nextDayISO = new Date(selectedDate);
-  nextDayISO.setDate(new Date(selectedDate).getDate() + 1);
-  const [endDate, setEndDate] = useState<string>(nextDayISO.toISOString());
+  const [startTime, setStartTime] = useState<Date>(getCurrentAndNextDates()[0]);
+  const [endTime, setEndTime] = useState<Date>(getCurrentAndNextDates()[1]);
+  const [startDate, setStartDate] = useState<Date>(new Date(selectedDate));
+  const [endDate, setEndDate] = useState<Date>(startDate);
 
   const onChangeTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTitle(e.target.value);
   };
 
-  useEffect(() => {
-    const start = combineDateAndTime(new Date(startDate), startTime);
-    const end = combineDateAndTime(new Date(endDate), endTime);
+  const onChangeEndDate = (newEndDate: Date) => {
+    setEndDate(newEndDate);
+    const newEndTime = combineDateAndTime(newEndDate, endTime);
+    setEndTime(newEndTime);
+  };
 
-    if (end < start) setIsEndBeforeStart(true);
-    else setIsEndBeforeStart(false);
+  const onChangeEndTime = (newEndTime: Date) => {
+    setEndTime(newEndTime);
+    const newEndDate = combineDateAndTime(newEndTime, endDate);
+    setEndDate(newEndDate);
+  };
+
+  useEffect(() => {
+    const start = combineDateAndTime(startDate, startTime);
+    const end = combineDateAndTime(endDate, endTime);
+    setIsEndBeforeStart(end < start);
   }, [startDate, startTime, endDate, endTime]);
 
   const tabs: Tab[] = [
@@ -57,9 +62,9 @@ const EventFormModal = ({ onClose }: EventFormModalProps) => {
           startTime={startTime}
           endTime={endTime}
           setStartDate={setStartDate}
-          setEndDate={setEndDate}
+          setEndDate={onChangeEndDate}
           setStartTime={setStartTime}
-          setEndTime={setEndTime}
+          setEndTime={onChangeEndTime}
           isEndBeforeStart={isEndBeforeStart}
         />
       ),
@@ -78,15 +83,18 @@ const EventFormModal = ({ onClose }: EventFormModalProps) => {
     const payload: DayEvent = {
       id: uuidv4(),
       title: title === "" ? "(제목 없음)" : title,
-      startDate: combineDateAndTime(new Date(startDate), startTime),
-      endDate: combineDateAndTime(new Date(endDate), endTime),
+      startDate: combineDateAndTime(
+        new Date(startDate),
+        startTime
+      ).toISOString(),
+      endDate: combineDateAndTime(new Date(endDate), endTime).toISOString(),
     };
     dispatch(addEvent(payload));
     onClose();
   };
 
   return (
-    <div className="min-h-[35rem] bg-slate-200/60 flex flex-col rounded-4xl shadow-lg relative px-5">
+    <div className="min-h-[35rem] bg-slate-200 flex flex-col rounded-4xl shadow-lg relative px-5">
       <div className="flex justify-between items-center mt-3">
         <HiMenuAlt4
           size={32}

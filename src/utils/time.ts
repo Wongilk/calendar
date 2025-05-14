@@ -1,48 +1,58 @@
-export const generateTimeOptions = (
-  startTime: string | null = null
-): string[] => {
-  const options: string[] = [];
-  let startHours = 0;
-  let startMinutes = 0;
-
-  if (startTime) {
-    const [period, time] = startTime.split(" ");
-    const [hours, minutes] = time.split(":").map(Number);
-    startHours = period === "오전" ? hours : hours + 12;
-    startMinutes = minutes;
-  }
-
-  const total = 48;
-
-  for (let i = 0; i < total; i++) {
-    const actualHour = startHours % 24;
-    const isAm = actualHour < 12 ? "오전" : "오후";
-    const convertedHour =
-      actualHour === 0 ? 12 : actualHour > 12 ? actualHour - 12 : actualHour;
-    const hourStr =
-      convertedHour < 10 ? `0${convertedHour}` : `${convertedHour}`;
-    const minuteStr = startMinutes === 0 ? "00" : "30";
-
-    options.push(`${isAm} ${hourStr}:${minuteStr}`);
-    if (startMinutes === 0) {
-      startMinutes = 30;
-    } else {
-      startMinutes = 0;
-      startHours += 1;
-    }
-  }
-
-  return options;
+export const formatTime = (date: Date): string => {
+  const h = date.getHours();
+  const m = date.getMinutes();
+  const isAm = h < 12 ? "오전" : "오후";
+  const hour12 = h % 12 === 0 ? 12 : h % 12;
+  const hh = hour12 < 10 ? `0${hour12}` : `${hour12}`;
+  const mm = m < 10 ? `0${m}` : `${m}`;
+  return `${isAm} ${hh}:${mm}`;
 };
 
-export const parseTimeTo24 = (
-  timeStr: string
-): { hours: number; minutes: number } => {
-  const [isAm, hourAndMinute] = timeStr.split(" ");
-  let [hours, minutes] = hourAndMinute.split(":").map(Number);
+export const formatElapsed = (minutes: number): string => {
+  if (minutes < 60) {
+    return `${minutes}분`;
+  }
+  const h = minutes / 60;
+  const hStr = h % 1 === 0 ? `${h}` : `${h.toFixed(1)}`;
+  return `${hStr}시간`;
+};
 
-  if (isAm === "오후" && hours !== 12) hours += 12;
-  if (isAm === "오전" && hours === 12) hours = 0;
+export interface TimeOption {
+  date: Date;
+  elapsedMinutes?: number;
+}
 
-  return { hours, minutes };
+export const generateTimeOptions = (
+  baseDate: Date,
+  isStart = true,
+  isSameDay = false
+): TimeOption[] => {
+  const options: TimeOption[] = [];
+  const date = new Date(baseDate);
+  let elapsedMinutes = 0;
+
+  if (isStart) {
+    date.setHours(0, 0, 0, 0);
+    for (let i = 0; i < 96; i++) {
+      options.push({ date: new Date(date) });
+      date.setMinutes(date.getMinutes() + 15);
+    }
+  } else if (isSameDay) {
+    for (let i = 0; i < 4; i++) {
+      options.push({ date: new Date(date), elapsedMinutes });
+      date.setMinutes(date.getMinutes() + 15);
+      elapsedMinutes += 15;
+    }
+    for (let i = 0; i < 46; i++) {
+      options.push({ date: new Date(date), elapsedMinutes });
+      date.setMinutes(date.getMinutes() + 30);
+      elapsedMinutes += 30;
+    }
+  } else {
+    for (let i = 0; i < 48; i++) {
+      options.push({ date: new Date(date) });
+      date.setMinutes(date.getMinutes() + 30);
+    }
+  }
+  return options;
 };
