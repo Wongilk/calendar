@@ -5,31 +5,27 @@ export function splitEventByDay(event: DayEvent): DayEvent[] {
   const end = new Date(event.endDate);
   const fragments: DayEvent[] = [];
 
-  // 1) 다음 날로 넘어가는가?
-  const sameDay = start.getDate() === end.getDate();
+  const startOfNextDay = new Date(start);
+  startOfNextDay.setHours(24, 0, 0, 0);
 
-  if (sameDay) {
-    fragments.push({ ...event });
-    return fragments;
-  }
-
-  // 2) 당일 남은 부분
-  const startDayLeft = new Date(start);
-  startDayLeft.setHours(24, 0, 0, 0);
   fragments.push({
     ...event,
     startDate: start.toISOString(),
-    endDate: startDayLeft.toISOString(),
+    endDate:
+      end.getDate() !== start.getDate()
+        ? startOfNextDay.toISOString()
+        : end.toISOString(),
   });
 
-  // 3) 다음날 남은 부분
-  const endDayStart = new Date(end);
-  endDayStart.setHours(0, 0, 0, 0);
-  fragments.push({
-    ...event,
-    startDate: endDayStart.toISOString(),
-    endDate: end.toISOString(),
-  });
+  if (end.getTime() > startOfNextDay.getTime()) {
+    const endFragmentStart = startOfNextDay;
+
+    fragments.push({
+      ...event,
+      startDate: endFragmentStart.toISOString(),
+      endDate: end.toISOString(),
+    });
+  }
 
   return fragments;
 }

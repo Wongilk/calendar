@@ -6,6 +6,7 @@ import { splitEventByDay } from "../../utils/events";
 const days = ["월", "화", "수", "목", "금", "토", "일"];
 
 const hours = Array.from({ length: 23 }, (_, i) => i + 1);
+const MS_PER_DAY = 24 * 60 * 60 * 1000;
 
 const formatHour = (hour: number) => {
   const period = hour < 12 ? "오전" : "오후";
@@ -20,42 +21,34 @@ const WeeklyCalendar = () => {
   );
   const weekDates = getWeekDates(selectedDate);
 
-  // const renderEvents = weekEvents.map((event) => {
-  //   const start = new Date(event.startDate);
-  //   const end = new Date(event.endDate);
-  //   const dayIdx = (start.getDay() + 6) % 7;
-  //   const startHourV = start.getHours() + start.getMinutes() / 60;
-  //   const endHourV =
-  //     end.getHours() === 0 ? 24 : end.getHours() + end.getMinutes() / 60;
+  const shortEvents = weekEvents.filter((event) => {
+    const start = new Date(event.startDate).getTime();
+    const end = new Date(event.endDate).getTime();
+    return end - start <= MS_PER_DAY;
+  });
 
-  //   return (
-  //     <div
-  //       key={event.id}
-  //       className="absolute bg-blue-200 rounded p-1 text-xs text-center"
-  //       style={{
-  //         left: `${(dayIdx * (100 / 7)).toFixed(5)}%`,
-  //         top: `${startHourV * 3}rem`,
-  //         width: `${(100 / 7).toFixed(4)}%`,
-  //         height: `${(endHourV - startHourV) * 3}rem`,
-  //       }}
-  //     >
-  //       {event.title}
-  //     </div>
-  //   );
+  // const longEvents = weekEvents.filter((event) => {
+  //   const start = new Date(event.startDate).getTime();
+  //   const end = new Date(event.endDate).getTime();
+  //   return end - start > MS_PER_DAY;
   // });
-  const renderEvents = weekEvents.flatMap((event: DayEvent) => {
-    // 1) 필요에 따라 이벤트 분할
+
+  const renderEvents = shortEvents.map((event: DayEvent) => {
     const frags = splitEventByDay(event);
 
-    // 2) 각 조각마다 기존 렌더 로직 적용
     return frags.map((frag, idx) => {
       const start = new Date(frag.startDate);
       const end = new Date(frag.endDate);
       const dayIdx = (start.getDay() + 6) % 7;
       const startHourV = start.getHours() + start.getMinutes() / 60;
-      const endHourV =
-        end.getHours() === 0 ? 24 : end.getHours() + end.getMinutes() / 60;
 
+      const isEndOfDay =
+        end.getHours() === 0 &&
+        end.getMinutes() === 0 &&
+        end.getSeconds() === 0 &&
+        end.getMilliseconds() === 0;
+
+      const endHourV = isEndOfDay ? 24 : end.getHours() + end.getMinutes() / 60;
       return (
         <div
           key={`${frag.id}-${idx}`}
@@ -72,6 +65,7 @@ const WeeklyCalendar = () => {
       );
     });
   });
+
   return (
     <div className="w-full bg-white rounded-4xl overflow-y-auto h-[calc(100vh-5rem)] text-gray-700">
       <div className="grid grid-cols-7 text-center pl-24 sticky top-0 z-10 bg-white">
